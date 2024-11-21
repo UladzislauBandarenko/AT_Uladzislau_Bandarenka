@@ -1,126 +1,148 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 using OpenQA.Selenium.Support.UI;
-using System;
+using OpenQA.Selenium.Interactions;
+using SeleniumExtras.WaitHelpers;
+
 
 namespace WebUITests
 {
+    // This class contains tests for verifying various functionalities on the EHU website.
     [TestFixture]
-    public class WebTestsEhu
+    [Parallelizable(ParallelScope.All)]
+    public class EHUPageTestsNUnit
     {
-        private IWebDriver? driver;
-
-        /// <summary>
-        /// Set up the WebDriver and configure the browser settings.
-        /// This method runs before each test to ensure a fresh browser instance.
-        /// </summary>
-        [SetUp]
-        public void SetUp()
+        private static ThreadLocal<IWebDriver> driver = new ThreadLocal<IWebDriver>(() =>
         {
-            driver = new ChromeDriver();
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30); // Set an implicit wait for locating elements
-            driver.Manage().Window.Maximize(); // Maximize the browser window
+            var chromeOptions = new ChromeOptions();
+            chromeOptions.AddArgument("--incognito"); // Используем режим инкогнито для изоляции
+            chromeOptions.AddArgument("--disable-extensions"); // Отключение расширений для стабильности
+            return new ChromeDriver(chromeOptions);
+        });
+
+        // Set up method that initializes the configuration and the Chrome WebDriver.
+        [SetUp]
+        public void Setup()
+        {
+            driver.Value.Manage().Window.Maximize();
+
+            // Load configuration from appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
         }
 
-        /// <summary>
-        /// Test Case 1: Verify Navigation to "About EHU" Page
-        /// Steps:
-        /// - Navigate to the homepage.
-        /// - Click the "About EHU" link.
-        /// - Verify the URL of the redirected page.
-        /// </summary>
-        [Test]
-        public void VerifyNavigationToAboutPage()
+        // Data provider for "VerifyNavigationToAboutEHUPage"
+        private static IEnumerable<object[]> NavigationTestCases()
         {
-            // Step 1: Navigate to the EHU homepage
-            driver.Navigate().GoToUrl("https://en.ehu.lt/");
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            // Step 2: Locate and click the "About EHU" link
-            var aboutLink = driver.FindElement(By.XPath("//*[@id=\"menu-item-16178\"]/a"));
+            yield return new object[]
+            {
+                config["TestSettings:EHUBaseUrl"],
+                config["TestSettings:AboutPageUrl"],
+                "About",
+                "About"
+            };
+        }
+
+        // Test to verify navigation to the "About EHU" page.
+        [Test, TestCaseSource(nameof(NavigationTestCases)), Category("Navigation")]
+        public void VerifyNavigationToAboutEHUPage(string baseUrl, string aboutUrl, string expectedTitle, string expectedHeader)
+        {
+            driver.Value.Navigate().GoToUrl(baseUrl);
+
+            var aboutLink = driver.Value.FindElement(By.LinkText("About"));
             aboutLink.Click();
 
-            // Step 3: Verify the URL of the redirected page
-            Assert.That(driver.Url, Is.EqualTo("https://en.ehu.lt/about/"), "The URL does not match the expected value.");
+            Assert.That(driver.Value.Url, Is.EqualTo(aboutUrl), "The URL does not match the expected value.");
+            Assert.That(driver.Value.Title, Is.EqualTo(expectedTitle), "The page title does not match the expected value.");
+            var header = driver.Value.FindElement(By.TagName("h1")).Text;
+            Assert.That(header, Is.EqualTo(expectedHeader), "The content header does not match the expected value.");
         }
 
-        /// <summary>
-        /// Test Case 2: Verify Search Functionality
-        /// Steps:
-        /// - Navigate to the homepage.
-        /// - Open the search bar, enter a query, and submit.
-        /// - Verify the URL contains the search term.
-        /// - Verify search results are displayed.
-        /// </summary>
-        [Test]
-        public void VerifySearchFunctionality()
+        // Data provider for "VerifySearchFunctionality"
+        private static IEnumerable<object[]> SearchTestCases()
         {
-            // Step 1: Navigate to the homepage
-            driver.Navigate().GoToUrl("https://en.ehu.lt/");
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            // Step 2: Locate and click the search button to open the search bar
-            var searchButton = driver.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div"));
+            yield return new object[]
+            {
+                config["TestSettings:EHUBaseUrl"],
+                config["TestSettings:SearchTerm"]
+            };
+        }
+
+        // Test to verify the search functionality on the EHU website.
+        [Test, TestCaseSource(nameof(SearchTestCases)), Category("Search")]
+        public void VerifySearchFunctionality(string baseUrl, string searchTerm)
+        {
+            driver.Value.Navigate().GoToUrl(baseUrl);
+
+            var searchButton = driver.Value.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div"));
             searchButton.Click();
 
-            // Step 3: Locate the search bar and input the search term
-            var searchBar = driver.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div/form/div/input"));
-            searchBar.SendKeys("study programs");
-
-            // Step 4: Submit the search query
+            var searchBar = driver.Value.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div/form/div/input"));
+            searchBar.SendKeys(searchTerm);
             searchBar.SendKeys(Keys.Enter);
 
-            // Step 5: Verify the URL contains the search term
-            Assert.That(driver.Url, Does.Contain("/?s=study+programs"), "The URL does not contain the expected search query.");
+            Assert.That(driver.Value.Url, Does.Contain("/?s=" + searchTerm.Replace(" ", "+")), "The URL does not contain the expected search query.");
 
-            // Step 6: Verify search results are displayed
-            var searchResults = driver.FindElements(By.XPath("//*[@id=\"page\"]/div[3]")); // Replace with actual selector for search results
+            var searchResults = driver.Value.FindElements(By.XPath("//*[@id=\"page\"]/div[3]"));
             Assert.That(searchResults.Count, Is.GreaterThan(0), "No search results were found.");
 
-            // Step 7 (Optional): Check if search results contain relevant content
             bool resultsContainSearchTerm = searchResults.Any(result => result.Text.Contains("study program", StringComparison.OrdinalIgnoreCase));
             Assert.That(resultsContainSearchTerm, Is.True, "Search results do not contain expected term 'study programs'.");
         }
 
-        /// <summary>
-        /// Test Case 3: Verify Language Switch Functionality
-        /// Steps:
-        /// - Navigate to the English homepage.
-        /// - Open the language switcher and select Lithuanian (Lietuvių).
-        /// - Verify the URL changes to the Lithuanian site.
-        /// </summary>
-        [Test]
-        public void VerifyLanguageSwitchFunctionality()
+        // Data provider for "VerifyLanguageChangeFunctionality"
+        private static IEnumerable<object[]> LanguageChangeTestCases()
         {
-            // Step 1: Navigate to the English version of the site
-            driver.Navigate().GoToUrl("https://en.ehu.lt/");
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            // Step 2: Locate and click the language switcher to open the menu
-            var languageSwitchButton = driver.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul"));
-            languageSwitchButton.Click();
-
-            // Step 3: Locate and click the Lithuanian language option (Lietuvių)
-            var ltButton = driver.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul/li/ul/li[3]/a"));
-            ltButton.Click();
-
-            // Step 4: Wait for the Lithuanian version to load and verify the URL
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            wait.Until(d => d.Url.Equals("https://lt.ehu.lt/"));
-
-            // Step 5: Assert the URL has changed to the Lithuanian version
-            Assert.That(driver.Url, Is.EqualTo("https://lt.ehu.lt/"), "The URL does not match the expected value.");
+            yield return new object[]
+            {
+                config["TestSettings:EHUBaseUrl"],
+                config["TestSettings:LithuanianVersionUrl"]
+            };
         }
 
-        /// <summary>
-        /// Clean up the WebDriver after each test.
-        /// Ensures that the browser is closed properly to avoid memory leaks.
-        /// </summary>
-        [TearDown]
-        public void TearDown()
+        [Test, TestCaseSource(nameof(LanguageChangeTestCases)), Category("Language")]
+        public void VerifyLanguageChangeFunctionality(string baseUrl, string lithuanianUrl)
         {
-            if (driver != null)
-            {
-                driver.Quit(); // Close the browser and dispose of the WebDriver
-            }
+            driver.Value.Navigate().GoToUrl(baseUrl);
+
+            var languageSwitchButton = driver.Value.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul"));
+            languageSwitchButton.Click();
+
+            var ltButton = driver.Value.FindElement(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul/li/ul/li[3]/a"));
+            ltButton.Click();
+
+            var wait = new WebDriverWait(driver.Value, TimeSpan.FromSeconds(10));
+            wait.Until(d => d.Url.Equals(lithuanianUrl));
+
+            Assert.That(driver.Value.Url, Is.EqualTo(lithuanianUrl), "The URL does not match the expected value.");
+        }
+
+
+        // Tear down method that closes the browser and cleans up the WebDriver instance.
+        [TearDown]
+        public void Teardown()
+        {
+            driver.Value.Quit();
         }
     }
 }
