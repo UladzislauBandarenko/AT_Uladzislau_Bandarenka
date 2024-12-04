@@ -1,3 +1,56 @@
+
+
+Design Patterns & Design Principles:
+
+1. Singleton (WebDriverManager)
+Pattern: Singleton
+
+Implementation:
+
+The Singleton pattern is used to manage instances of IWebDriver using ThreadLocal.
+Each thread (test) has its own unique IWebDriver instance, avoiding conflicts during parallel execution.
+The GetDriver method returns the current driver instance for the thread, and the QuitDriver method ensures proper cleanup of the driver.
+
+Advantages:
+
+Unique driver instance for each test.
+Simplified management of the driver's lifecycle.
+
+2. Builder (PageBuilder)
+Pattern: Builder
+
+Implementation:
+
+The Builder pattern is used to create page (Page Object) instances, providing a centralized approach to initialization.
+PageBuilder accepts an IWebDriver instance and creates page objects through methods like BuildHomePage.
+
+Advantages:
+
+Structured initialization of pages.
+Easy addition of new pages without changes to existing tests.
+
+3. Page Object (HomePage)
+Pattern: Page Object
+
+Implementation:
+
+Each page is represented by a separate class that encapsulates the logic for interacting with its elements.
+HomePage contains methods to perform actions on the page, such as Open, Search, and SwitchLanguageToLithuanian.
+
+Advantages:
+
+Test readability: Tests focus on actions rather than locator details.
+Reusability of page logic: Methods can be called from multiple tests.
+
+
+These patterns together ensure:
+
+Test isolation during parallel execution.
+Ease of maintenance through structured code.
+Test readability, focusing on scenarios rather than implementation details.
+
+
+
 WebUITests Task:
 Comparison of NUnit and xUnit
 
