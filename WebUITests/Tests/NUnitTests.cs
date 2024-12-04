@@ -10,10 +10,12 @@ using SeleniumExtras.WaitHelpers;
 
 namespace WebUITests
 {
-    // This class contains tests for verifying various functionalities on the EHU website.
+    /// <summary>
+    /// This class contains tests for verifying various functionalities on the EHU website.
+    /// </summary>
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
-    public class EHUPageTestsNUnit
+    public class NUnitTests
     {
         private static ThreadLocal<IWebDriver> driver = new ThreadLocal<IWebDriver>(() =>
         {
@@ -23,7 +25,9 @@ namespace WebUITests
             return new ChromeDriver(chromeOptions);
         });
 
-        // Set up method that initializes the configuration and the Chrome WebDriver.
+        /// <summary>
+        /// Set up method that initializes the configuration and the Chrome WebDriver.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
@@ -53,8 +57,10 @@ namespace WebUITests
             };
         }
 
-        // Test to verify navigation to the "About EHU" page.
-        [Test, TestCaseSource(nameof(NavigationTestCases)), Category("Navigation")]
+        /// <summary>
+        /// Test to verify navigation to the "About EHU" page.
+        /// </summary>
+        [Test, TestCaseSource(nameof(NavigationTestCases))]
         public void VerifyNavigationToAboutEHUPage(string baseUrl, string aboutUrl, string expectedTitle, string expectedHeader)
         {
             driver.Value.Navigate().GoToUrl(baseUrl);
@@ -83,8 +89,10 @@ namespace WebUITests
             };
         }
 
-        // Test to verify the search functionality on the EHU website.
-        [Test, TestCaseSource(nameof(SearchTestCases)), Category("Search")]
+        /// <summary>
+        /// Test to verify the search functionality on the EHU website.
+        /// </summary>
+        [Test, TestCaseSource(nameof(SearchTestCases))]
         public void VerifySearchFunctionality(string baseUrl, string searchTerm)
         {
             driver.Value.Navigate().GoToUrl(baseUrl);
@@ -120,7 +128,10 @@ namespace WebUITests
             };
         }
 
-        [Test, TestCaseSource(nameof(LanguageChangeTestCases)), Category("Language")]
+        /// <summary>
+        /// Test to verify the functionality of changing the website language from English to Lithuanian.
+        /// </summary>
+        [Test, TestCaseSource(nameof(LanguageChangeTestCases))]
         public void VerifyLanguageChangeFunctionality(string baseUrl, string lithuanianUrl)
         {
             driver.Value.Navigate().GoToUrl(baseUrl);
@@ -137,8 +148,9 @@ namespace WebUITests
             Assert.That(driver.Value.Url, Is.EqualTo(lithuanianUrl), "The URL does not match the expected value.");
         }
 
-
-        // Tear down method that closes the browser and cleans up the WebDriver instance.
+        /// <summary>
+        /// Tear down method that closes the browser and cleans up the WebDriver instance.
+        /// </summary>
         [TearDown]
         public void Teardown()
         {
