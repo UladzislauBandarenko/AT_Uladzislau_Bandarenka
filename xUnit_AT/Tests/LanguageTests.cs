@@ -31,6 +31,6 @@ public class LanguageTests : IDisposable
 
     public void Dispose()
     {
-        WebDriverManager.QuitDriver(); // Обязательно закрываем драйвер
+        WebDriverManager.QuitDriver();
     }
 }
