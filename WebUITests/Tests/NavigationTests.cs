@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
+using Serilog;
 using WebUITests.Managers;
 using WebUITests.Builders;
 using WebUITests.Pages;
@@ -6,41 +8,69 @@ using WebUITests.Pages;
 namespace WebUITests.Tests
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.All)] 
+    [Parallelizable(ParallelScope.All)]
     public class NavigationTests
     {
+        private ILogger _logger;
         private PageBuilder _config;
         private HomePage _homePage;
 
         [SetUp]
         public void Setup()
         {
+            _logger = LoggerConfig.CreateLogger();
+            _logger.Information("Test Setup: Initializing test environment.");
+
             _config = new PageBuilder();
-            WebDriverManager.InitializeDriver(); 
+            WebDriverManager.InitializeDriver();
             WebDriverManager.Driver.Manage().Window.Maximize();
             _homePage = new HomePage(WebDriverManager.Driver);
+
+            _logger.Debug("WebDriver initialized and browser maximized.");
         }
 
         [TearDown]
         public void Teardown()
         {
+            _logger.Information("Test Teardown: Cleaning up test environment.");
             WebDriverManager.QuitDriver();
         }
 
         [Test]
         public void VerifyNavigationToAboutEHUPage()
         {
-            string baseUrl = _config.GetConfigValue("TestSettings:EHUBaseUrl");
-            string aboutUrl = _config.GetConfigValue("TestSettings:AboutPageUrl");
-            string expectedTitle = "About";
-            string expectedHeader = "About";
+            _logger.Information("Starting test: VerifyNavigationToAboutEHUPage");
 
-            _homePage.NavigateToUrl(baseUrl);
-            _homePage.ClickAboutLink();
+            try
+            {
+                string baseUrl = _config.GetConfigValue("TestSettings:EHUBaseUrl");
+                string aboutUrl = _config.GetConfigValue("TestSettings:AboutPageUrl");
+                string expectedTitle = "About";
+                string expectedHeader = "About";
 
-            Assert.That(WebDriverManager.Driver.Url, Is.EqualTo(aboutUrl));
-            Assert.That(_homePage.GetPageTitle(), Is.EqualTo(expectedTitle));
-            Assert.That(_homePage.GetHeaderText(), Is.EqualTo(expectedHeader));
+                _logger.Debug($"Navigating to base URL: {baseUrl}");
+                _homePage.NavigateToUrl(baseUrl);
+
+                _logger.Debug("Clicking on the 'About' link.");
+                _homePage.ClickAboutLink();
+
+                _logger.Debug("Validating navigation to the 'About' page.");
+                WebDriverManager.Driver.Url.Should().Be(aboutUrl);
+                _logger.Debug($"URL validation passed: {aboutUrl}");
+
+                _homePage.GetPageTitle().Should().Be(expectedTitle, "because the page title should match the expected value.");
+                _logger.Debug($"Page title validation passed: {expectedTitle}");
+
+                _homePage.GetHeaderText().Should().Be(expectedHeader, "because the header text should match the expected value.");
+                _logger.Debug($"Header text validation passed: {expectedHeader}");
+
+                _logger.Information("Test passed: VerifyNavigationToAboutEHUPage");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Test failed: VerifyNavigationToAboutEHUPage");
+                throw;
+            }
         }
     }
 }

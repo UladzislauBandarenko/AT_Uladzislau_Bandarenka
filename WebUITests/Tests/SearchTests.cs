@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
+using Serilog;
 using WebUITests.Managers;
 using WebUITests.Builders;
 using WebUITests.Pages;
@@ -6,17 +8,21 @@ using WebUITests.Pages;
 namespace WebUITests.Tests
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.All)] 
+    [Parallelizable(ParallelScope.All)]
     public class SearchTests
     {
+        private ILogger _logger;
         private PageBuilder _config;
         private HomePage _homePage;
 
         [SetUp]
         public void Setup()
         {
+            _logger = LoggerConfig.CreateLogger();
+            _logger.Information("Test Setup: Initializing test environment.");
+
             _config = new PageBuilder();
-            WebDriverManager.InitializeDriver(); 
+            WebDriverManager.InitializeDriver();
             WebDriverManager.Driver.Manage().Window.Maximize();
             _homePage = new HomePage(WebDriverManager.Driver);
         }
@@ -24,21 +30,37 @@ namespace WebUITests.Tests
         [TearDown]
         public void Teardown()
         {
-            WebDriverManager.QuitDriver(); 
+            _logger.Information("Test Teardown: Cleaning up test environment.");
+            WebDriverManager.QuitDriver();
         }
 
         [Test]
         public void VerifySearchFunctionality()
         {
-            string baseUrl = _config.GetConfigValue("TestSettings:EHUBaseUrl");
-            string searchTerm = _config.GetConfigValue("TestSettings:SearchTerm");
+            _logger.Information("Starting test: VerifySearchFunctionality");
 
-            _homePage.NavigateToUrl(baseUrl);
-            _homePage.ClickSearchButton();
-            _homePage.EnterSearchTerm(searchTerm);
+            try
+            {
+                string baseUrl = _config.GetConfigValue("TestSettings:EHUBaseUrl");
+                string searchTerm = _config.GetConfigValue("TestSettings:SearchTerm");
 
-            Assert.That(WebDriverManager.Driver.Url, Does.Contain("/?s=" + searchTerm.Replace(" ", "+")));
-            Assert.That(_homePage.HasSearchResults(), Is.True, "No search results were found.");
+                _logger.Debug($"Navigating to base URL: {baseUrl}");
+                _homePage.NavigateToUrl(baseUrl);
+
+                _logger.Debug($"Performing search for: {searchTerm}");
+                _homePage.ClickSearchButton();
+                _homePage.EnterSearchTerm(searchTerm);
+
+                WebDriverManager.Driver.Url.Should().Contain($"/?s={searchTerm.Replace(" ", "+")}");
+                _homePage.HasSearchResults().Should().BeTrue("because search results are expected for a valid query.");
+
+                _logger.Information("Test passed: VerifySearchFunctionality");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Test failed: VerifySearchFunctionality");
+                throw;
+            }
         }
     }
 }

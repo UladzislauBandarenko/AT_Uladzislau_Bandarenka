@@ -13,11 +13,12 @@ namespace WebUITests.Pages
 
         // Locators
         private readonly By _aboutLink = By.LinkText("About");
-        private readonly By _searchButton = By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div");
-        private readonly By _languageSwitchButton = By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul");
-        private readonly By _searchBar = By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/div/form/div/input");
+        private readonly By _searchButton = By.CssSelector("#masthead > div.header > div > div.col-1 > div");
+        private readonly By _languageSwitchButton = By.CssSelector(".language-switcher");
+        private readonly By _searchBar = By.CssSelector("input.form-control[name='s']");
         private readonly By _header = By.TagName("h1");
-        private readonly By _searchResults = By.XPath("//*[@id=\"page\"]/div[3]");
+        private readonly By _searchResults = By.CssSelector("#page > div.content");
+
 
         public HomePage(IWebDriver driver)
         {
@@ -51,7 +52,7 @@ namespace WebUITests.Pages
         public void SwitchToLithuanianVersion(string lithuanianUrl)
         {
             _wait.Until(ExpectedConditions.ElementToBeClickable(_languageSwitchButton)).Click();
-            var ltButton = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id=\"masthead\"]/div[1]/div/div[4]/ul/li/ul/li[3]/a")));
+            var ltButton = _wait.Until(ExpectedConditions.ElementToBeClickable(By.LinkText("LT")));
             ltButton.Click();
             _wait.Until(ExpectedConditions.UrlToBe(lithuanianUrl));
         }
