@@ -37,6 +37,10 @@ namespace ProjectRoot.Pages
             var searchBar = driver.FindElement(By.CssSelector("input.form-control[name='s']"));
             searchBar.SendKeys(query + Keys.Enter);
         }
+        public void ClickSearchButton()
+        {
+            driver.FindElement(By.CssSelector("#masthead > div.header > div > div.col-1 > div")).Click();
+        }
 
         public IReadOnlyCollection<IWebElement> GetSearchResults()
         {
