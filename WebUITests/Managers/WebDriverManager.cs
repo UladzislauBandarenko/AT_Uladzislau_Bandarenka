@@ -25,10 +25,12 @@ namespace WebUITests.Managers
         {
             if (_driver.Value == null)
             {
+                
                 var options = new ChromeOptions();
                 options.AddArgument("--incognito");
                 options.AddArgument("--disable-extensions");
                 _driver.Value = new ChromeDriver(options);
+                _driver.Value.Manage().Window.Maximize();
             }
         }
 
