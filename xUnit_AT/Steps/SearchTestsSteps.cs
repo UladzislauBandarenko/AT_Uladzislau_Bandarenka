@@ -53,16 +53,10 @@ namespace ProjectRoot.Tests
             searchResults.Should().NotBeEmpty("because the search results should return at least one result for a valid search term");
         }
 
-        // Dispose the WebDriver to ensure the browser is closed after the tests
         [AfterScenario]
-        public void AfterScenario()
-        {
-            driver.Quit();  // Quit the driver to close the browser
-        }
-
         public void Dispose()
         {
-            driver?.Dispose();  // Dispose of the WebDriver when no longer needed
+            WebDriverManager.QuitDriver();
         }
     }
 }

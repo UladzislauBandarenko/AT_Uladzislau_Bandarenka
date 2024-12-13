@@ -29,7 +29,7 @@ namespace ProjectRoot.Tests
         public void WhenTheUserClicksOnTheAboutLink()
         {
             var homepage = builder.BuildHomePage();
-            homepage.ClickAboutLink(); // Calls the existing method to click the About link
+            homepage.ClickAboutLink(); 
         }
 
         [Then(@"the URL should be ""(.*)""")]
@@ -46,11 +46,6 @@ namespace ProjectRoot.Tests
         }
 
         [AfterScenario]
-        public void AfterScenario()
-        {
-            driver.Quit(); 
-        }
-
         public void Dispose()
         {
             WebDriverManager.QuitDriver();

@@ -47,7 +47,7 @@ public class LanguageSwitchSteps
     }
 
     [AfterScenario]
-    public void Cleanup()
+    public void Dispose()
     {
         WebDriverManager.QuitDriver();
     }

@@ -50,7 +50,7 @@ namespace WebUITests.StepDefinitions
         }
 
         [AfterScenario]
-        public void Cleanup()
+        public void Dispose()
         {
             WebDriverManager.QuitDriver();
         }

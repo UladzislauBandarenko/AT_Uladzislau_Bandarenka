@@ -26,7 +26,7 @@ namespace ProjectRoot.Tests
         {
             log.Information("Opening homepage...");
             var homepage = builder.BuildHomePage();
-            homepage.Open(); // Navigate to the homepage
+            homepage.Open(); 
         }
 
         [When(@"the user switches to the Lithuanian version")]
@@ -34,7 +34,7 @@ namespace ProjectRoot.Tests
         {
             log.Debug("Switching language to Lithuanian...");
             var homepage = builder.BuildHomePage();
-            homepage.SwitchLanguageToLithuanian();  // Switch the language to Lithuanian
+            homepage.SwitchLanguageToLithuanian(); 
         }
 
         [Then(@"the page URL should be updated to the Lithuanian version")]
@@ -53,15 +53,9 @@ namespace ProjectRoot.Tests
         }
 
         [AfterScenario]
-        public void AfterScenario()
-        {
-            log.Information("Test teardown: Cleaning up the driver.");
-            driver.Quit();  // Close the browser
-        }
-
         public void Dispose()
         {
-            driver?.Dispose();
+            WebDriverManager.QuitDriver();
         }
     }
 }
