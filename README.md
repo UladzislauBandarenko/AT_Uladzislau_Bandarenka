@@ -1,4 +1,6 @@
+![image](https://github.com/user-attachments/assets/2288d83d-5207-43d2-9426-533bad7165a6)
 
+![image](https://github.com/user-attachments/assets/3e0ef810-9e8a-4113-b904-33a62c062f34)
 
 Design Patterns & Design Principles:
 
