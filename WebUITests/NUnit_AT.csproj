@@ -1,33 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	<SpecFlowToolsMSBuildGeneration>true</SpecFlowToolsMSBuildGeneration>
-	<SpecFlowFeatureLanguage>en-US</SpecFlowFeatureLanguage>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<SpecFlowToolsMSBuildGeneration>true</SpecFlowToolsMSBuildGeneration>
+		<SpecFlowFeatureLanguage>en-US</SpecFlowFeatureLanguage>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
-	  <PackageReference Include="FluentAssertions" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-	  <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.26.1" />
-    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="131.0.6778.6900" />
-    <PackageReference Include="SeleniumExtras.WaitHelpers" Version="1.0.2" />
-    <PackageReference Include="Serilog" Version="4.1.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="SpecFlow" Version="3.9.74" />
-    <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.74" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
+		<PackageReference Include="ExtentReports" Version="5.0.4" />
+		<PackageReference Include="FluentAssertions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+		<PackageReference Include="NUnit" Version="4.2.2" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+		<PackageReference Include="Selenium.WebDriver" Version="4.26.1" />
+		<PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="131.0.6778.6900" />
+		<PackageReference Include="SeleniumExtras.WaitHelpers" Version="1.0.2" />
+		<PackageReference Include="Serilog" Version="4.1.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="SpecFlow" Version="3.9.74" />
+		<PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
+		<PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.74" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="appsettings.json">
@@ -36,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Feature\" />
+		<Folder Include="Feature\" />
 	</ItemGroup>
 
 </Project>
